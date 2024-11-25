@@ -2,7 +2,7 @@ name: Vercel Preview Deployment
 env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 on:
-  create:
+  push:
     branches:
       - staging
 jobs:
