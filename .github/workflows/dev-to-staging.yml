@@ -61,7 +61,15 @@ jobs:
         id: package-version-new
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
-      - name: Commit versioning on Dev
+      - name: Commit Dev and Checkout Staging
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git checkout -b staging
+          git push --set-upstream origin staging
+
+
+      - name: versioning dev
         run : |
           git config user.name github-actions
           git config user.email github-actions@github.com
