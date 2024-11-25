@@ -2,11 +2,14 @@ name: Vercel Preview Deployment
 env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 on:
-  push:
+  pull_request:
     branches:
       - staging
+    types:
+      - closed
 jobs:
   Deploy-Preview:
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
