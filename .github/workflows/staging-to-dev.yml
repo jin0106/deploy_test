@@ -9,7 +9,7 @@ on:
       - closed
 
 jobs:
-  checkout-dev-versioning:
+  create-merge-staging-to-dev-branch:
     if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     steps:
@@ -26,7 +26,11 @@ jobs:
           git add .
           git push --set-upstream origin merge-staging-to-dev
 
-
+  create-merge-pr:
+    if: ${{ success() }}
+    needs: create-merge-staging-to-dev-branch
+    runs-on: ubuntu-latest
+    steps:
       - name: Create Pull Request
         run: gh pr create --title "Merge Staging to dev" --body "staging to dev" --assignee @me --base dev
         env:
@@ -38,8 +42,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
   delete-staiging-branch:
-    if: ${{ success() }}
-    needs: checkout-dev-versioning
+    if: ${{ github.event.pull_request.merged }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout

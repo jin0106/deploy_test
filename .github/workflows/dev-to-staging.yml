@@ -1,4 +1,6 @@
 name: Merge Dev to Staging
+env:
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 # 버전 minor와 major 중 어떤것을 올릴것인지  선택 가능
 on:
@@ -33,7 +35,7 @@ jobs:
 
   # dev 브랜치로 checkout 및 버전 변경 후 commit
   # dev 브랜치에서 staging 브랜치 생성 및 staging 브랜치 push
-  checkout-dev-versioning:
+  dev-versioning:
     if: ${{ success() }}
     needs: delete-staging-branch
     runs-on: ubuntu-latest
@@ -61,8 +63,14 @@ jobs:
         id: package-version-new
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
+
+  push-staging:
+    if: ${{ success() }}
+    needs: dev-versioning
+    runs-on: ubuntu-latest
+    steps:
       - name: checkout staging and push
-        run : |
+        run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
@@ -70,3 +78,17 @@ jobs:
           git checkout -b staging
           git push --set-upstream origin staging
 
+  deploy-prod-server:
+    if: ${{ success() }}
+    needs: push-staging
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
