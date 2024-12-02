@@ -76,3 +76,6 @@ jobs:
           git checkout -b staging
           git push --set-upstream origin staging
 
+      - name: Debug GitHub Context
+        run: |
+          echo "Event: ${{ toJson(github.event) }}"
