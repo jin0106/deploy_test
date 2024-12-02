@@ -4,10 +4,11 @@ env:
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
 
 on:
-  push:
-  create:
-    branches:
-      - staging
+  workflow_run:
+    workflows:
+      - Merge Dev To Staging
+    types:
+      - completed
 
 
 jobs:
