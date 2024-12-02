@@ -31,6 +31,7 @@ jobs:
         id: set-base-version
         run: |
           BASE_VERSION=$(echo ${{ steps.package-version-old.outputs.current-version }} | sed -E 's/-[a-zA-Z0-9\.]+$//')
+          echo "BASE_VERSION=$BASE_VERSION" >> $GITHUB_ENV
 
       - name: Commit changes
         run: |
