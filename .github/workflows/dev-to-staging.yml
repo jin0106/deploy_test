@@ -63,12 +63,6 @@ jobs:
         id: package-version-new
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
-
-  push-staging:
-    if: ${{ success() }}
-    needs: dev-versioning
-    runs-on: ubuntu-latest
-    steps:
       - name: checkout staging and push
         run: |
           git config user.name "github-actions[bot]"
@@ -78,9 +72,11 @@ jobs:
           git checkout -b staging
           git push --set-upstream origin staging
 
+     
+
   deploy-prod-server:
     if: ${{ success() }}
-    needs: push-staging
+    needs: dev-versioning
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
