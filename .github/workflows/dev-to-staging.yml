@@ -63,6 +63,8 @@ jobs:
 
       - name: checkout staging and push
         run : |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "Version v${{ steps.package-version-old.outputs.current-version }} to v${{ steps.package-version-new.outputs.current-version }}"
           git checkout -b staging
