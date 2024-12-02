@@ -21,7 +21,7 @@ export default function Home() {
       >
         server : {process.env.PLATFORM_ENV} auto deploy222
         version:{version}
-        staging~~~~~
+        staging~@@@@
       </div>
   );
 }
