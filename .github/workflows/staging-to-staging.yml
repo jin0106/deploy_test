@@ -51,17 +51,6 @@ jobs:
         if: ${{ inputs.version == 'rc'}}
         run: |
           npm version prerelease --no-git-tag-version --no-workspaces-update
-
-     
-
-  push-staging:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: staging
-
       - name: Get package version
         id: package-version-new
         uses: martinbeentjes/npm-get-version-action@v1.3.1
@@ -73,6 +62,7 @@ jobs:
           git add .
           git commit -m "Version v${{ steps.package-version-old.outputs.current-version }} to v${{ steps.package-version-new.outputs.current-version }}"
           git push --set-upstream origin staging
+
 
   deploy-prod-server:
     if: ${{ success() }}
