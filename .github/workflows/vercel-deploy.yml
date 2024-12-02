@@ -1,6 +1,8 @@
 name: Vercel Preview Deployment
 env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+  VERCEL_ORG_ID: ${{ secretes.VERCEL_ORG_ID }}
+
 on:
   push:
     branches:
