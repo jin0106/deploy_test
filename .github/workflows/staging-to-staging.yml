@@ -1,4 +1,6 @@
 name: Merge Staging to Staging
+env:
+  VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 # 버전 minor와 major 중 어떤것을 올릴것인지  선택 가능
 on:
@@ -17,7 +19,7 @@ on:
 jobs:
 
   # staging 브랜치 브랜치의 버젼 변경
-  checkout-dev-versioning:
+  staging-versioning:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -49,6 +51,11 @@ jobs:
         run: |
           npm version prerelease --no-git-tag-version --no-workspaces-update
 
+     
+
+  push-staging:
+    runs-on: ubuntu-latest
+    steps:
       - name: Get package version
         id: package-version-new
         uses: martinbeentjes/npm-get-version-action@v1.3.1
@@ -61,3 +68,17 @@ jobs:
           git commit -m "Version v${{ steps.package-version-old.outputs.current-version }} to v${{ steps.package-version-new.outputs.current-version }}"
           git push --set-upstream origin staging
 
+  deploy-prod-server:
+    if: ${{ success() }}
+    needs: push-staging
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Build Project Artifacts
+        run: vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
+      - name: Deploy Project Artifacts to Vercel
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
