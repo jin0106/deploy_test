@@ -57,6 +57,11 @@ jobs:
   push-staging:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: staging
+
       - name: Get package version
         id: package-version-new
         uses: martinbeentjes/npm-get-version-action@v1.3.1
