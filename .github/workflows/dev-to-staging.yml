@@ -74,7 +74,8 @@ jobs:
           git push --set-upstream origin staging
 
   deploy-staging-server:
-    if: ${{ github.event.pull_request.merged }}
+    if: ${{ success() }}
+    needs: dev-versioning
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
