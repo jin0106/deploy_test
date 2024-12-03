@@ -60,7 +60,7 @@ jobs:
           PR_NUMBER=$(echo "$PR_OUTPUT" | grep -oP '(?<=/pull/)\d+')
           echo "PR_NUMBER=$PR_NUMBER" >> $GITHUB_ENV
         env:
-          GH_TOKE: ${{ secrets.GH_TOKEN }}
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Merge Pull Request
         run: |
