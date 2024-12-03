@@ -10,6 +10,7 @@ on:
       sprint:
         type: number
         description: sprint-number
+        required: true
 
 
 
