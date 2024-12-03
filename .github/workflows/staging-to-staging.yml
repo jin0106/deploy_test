@@ -1,10 +1,7 @@
-name: Merge Dev to Staging
+name: Merge Staging to Staging
 env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
   VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
-permissions:
-  contents: write
-  actions: write
 
 # 버전 minor와 major 중 어떤것을 올릴것인지  선택 가능
 on:
@@ -18,60 +15,50 @@ on:
         options:
           - 'minor'
           - 'major'
-
+          - 'patch'
+          - 'rc'
 jobs:
-  # staging 브랜치가 존재한다면 삭제
-  delete-staging-branch:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          ref: dev
-      - name: Delete an exiting staging branch
-        run: |
-          if [ -n "$(git ls-remote --heads origin staging)" ]; then
-            git fetch --prune
-            git push origin --delete staging
-          fi
-            echo "staging branch doesn't exist"
-  
 
-  # dev 브랜치로 checkout 및 버전 변경 후 commit
-  # dev 브랜치에서 staging 브랜치 생성 및 staging 브랜치 push
-  dev-versioning:
-    if: ${{ success() }}
-    needs: delete-staging-branch
+  # staging 브랜치 브랜치의 버젼 변경
+  staging-versioning:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: dev
+          ref: staging
 
       - name: Get package version
         id: package-version-old
         uses: martinbeentjes/npm-get-version-action@v1.3.1
-
-      - name: version minor
-        if: ${{ inputs.version == 'minor'}}
-        run: |
-          npm version preminor --no-git-tag-version --no-workspaces-update --preid=rc
 
       - name: version major
         if: ${{ inputs.version == 'major'}}
         run: |
           npm version premajor --no-git-tag-version --no-workspaces-update --preid=rc
 
+      - name: version minor
+        if: ${{ inputs.version == 'minor'}}
+        run: |
+          npm version preminor --no-git-tag-version --no-workspaces-update --preid=rc
+
+      - name: version patch
+        if: ${{ inputs.version == 'patch'}}
+        run: |
+          npm version prepatch --no-git-tag-version --no-workspaces-update --preid=rc
+
+      - name: version rc
+        if: ${{ inputs.version == 'rc'}}
+        run: |
+          npm version prerelease --no-git-tag-version --no-workspaces-update
       - name: Get package version
         id: package-version-new
         uses: martinbeentjes/npm-get-version-action@v1.3.1
 
       - name: checkout staging and push
-        run: |
+        run : |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add .
           git commit -m "Version v${{ steps.package-version-old.outputs.current-version }} to v${{ steps.package-version-new.outputs.current-version }}"
-          git checkout -b staging
           git push --set-upstream origin staging
