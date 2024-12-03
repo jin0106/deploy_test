@@ -49,8 +49,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: staging
+
       - name: Create pull request
         id: cpr
         uses: peter-evans/create-pull-request@v7
@@ -74,10 +73,13 @@ jobs:
           team-reviewers: |
             developers
           draft: false
+          branch: staging
 
   automerge:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
       - uses: peter-evans/enable-pull-request-automerge@v3
         with:
           pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
