@@ -74,6 +74,7 @@ jobs:
             developers
           draft: false
           branch: staging
+          base: main
 
   automerge:
     runs-on: ubuntu-latest
