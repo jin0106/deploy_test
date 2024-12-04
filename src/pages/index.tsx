@@ -1,6 +1,7 @@
 import localFont from "next/font/local";
 import getConfig from 'next/config';
-
+const { publicRuntimeConfig } = getConfig();
+const version = publicRuntimeConfig?.version
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
